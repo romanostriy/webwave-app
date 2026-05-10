@@ -1,0 +1,923 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<title>WebWave — Заказать сайт</title>
+<script src="https://telegram.org/js/telegram-web-app.js"></script>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0a0a0f;
+    --surface: #13131a;
+    --card: #1a1a24;
+    --border: #2a2a3a;
+    --accent: #4f8eff;
+    --accent2: #a259ff;
+    --green: #00e5a0;
+    --text: #f0f0ff;
+    --muted: #7070a0;
+    --radius: 16px;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+
+  body {
+    font-family: 'Manrope', sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+
+  /* ── ШАПКА ── */
+  .header {
+    padding: 20px 20px 0;
+    position: relative;
+  }
+  .header-top {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 24px;
+  }
+  .logo {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 28px;
+    letter-spacing: 2px;
+    background: linear-gradient(135deg, var(--accent), var(--accent2));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+  }
+  .badge {
+    background: linear-gradient(135deg, var(--accent), var(--accent2));
+    color: #fff;
+    font-size: 10px;
+    font-weight: 800;
+    padding: 4px 10px;
+    border-radius: 20px;
+    letter-spacing: 1px;
+  }
+
+  /* ── HERO ── */
+  .hero {
+    padding: 0 20px 28px;
+    position: relative;
+  }
+  .hero-title {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 42px;
+    line-height: 1.0;
+    letter-spacing: 1px;
+    margin-bottom: 10px;
+  }
+  .hero-title span {
+    background: linear-gradient(135deg, var(--accent), var(--green));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+  }
+  .hero-sub {
+    color: var(--muted);
+    font-size: 13px;
+    line-height: 1.6;
+    margin-bottom: 16px;
+  }
+  .discount-bar {
+    background: linear-gradient(135deg, rgba(79,142,255,0.15), rgba(162,89,255,0.15));
+    border: 1px solid rgba(79,142,255,0.3);
+    border-radius: 12px;
+    padding: 10px 14px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 12px;
+    font-weight: 700;
+  }
+  .discount-bar .icon { font-size: 16px; }
+  .discount-bar .highlight { color: var(--green); }
+
+  /* ── ТАБЫ ── */
+  .tabs {
+    display: flex;
+    gap: 8px;
+    padding: 0 20px 20px;
+    overflow-x: auto;
+    scrollbar-width: none;
+  }
+  .tabs::-webkit-scrollbar { display: none; }
+  .tab {
+    flex-shrink: 0;
+    padding: 8px 16px;
+    border-radius: 20px;
+    border: 1px solid var(--border);
+    background: var(--surface);
+    color: var(--muted);
+    font-size: 12px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.2s;
+    font-family: 'Manrope', sans-serif;
+  }
+  .tab.active {
+    background: linear-gradient(135deg, var(--accent), var(--accent2));
+    border-color: transparent;
+    color: #fff;
+  }
+
+  /* ── КАРТОЧКИ УСЛУГ ── */
+  .services { padding: 0 20px; }
+  .service-card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    margin-bottom: 14px;
+    overflow: hidden;
+    cursor: pointer;
+    transition: all 0.25s;
+    display: none;
+  }
+  .service-card.visible { display: block; }
+  .service-card.selected {
+    border-color: var(--accent);
+    box-shadow: 0 0 0 1px var(--accent), 0 8px 32px rgba(79,142,255,0.15);
+  }
+  .service-card:active { transform: scale(0.98); }
+
+  .card-header {
+    padding: 18px 18px 14px;
+    display: flex;
+    align-items: flex-start;
+    gap: 14px;
+  }
+  .card-icon {
+    width: 46px;
+    height: 46px;
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 22px;
+    flex-shrink: 0;
+  }
+  .icon-blue  { background: rgba(79,142,255,0.15); }
+  .icon-purple{ background: rgba(162,89,255,0.15); }
+  .icon-green { background: rgba(0,229,160,0.12); }
+  .icon-orange{ background: rgba(255,160,50,0.12); }
+
+  .card-info { flex: 1; }
+  .card-name {
+    font-size: 15px;
+    font-weight: 800;
+    margin-bottom: 3px;
+  }
+  .card-tagline {
+    font-size: 11px;
+    color: var(--muted);
+    font-weight: 500;
+  }
+  .card-price-block {
+    text-align: right;
+  }
+  .old-price {
+    font-size: 11px;
+    color: var(--muted);
+    text-decoration: line-through;
+  }
+  .new-price {
+    font-size: 20px;
+    font-weight: 800;
+    color: var(--green);
+  }
+  .price-label {
+    font-size: 10px;
+    color: var(--muted);
+  }
+
+  /* ── ОПИСАНИЕ КАРТОЧКИ ── */
+  .card-body {
+    max-height: 0;
+    overflow: hidden;
+    transition: max-height 0.35s ease;
+    border-top: 1px solid transparent;
+  }
+  .card-body.open {
+    max-height: 600px;
+    border-top-color: var(--border);
+  }
+  .card-body-inner { padding: 16px 18px 18px; }
+
+  .what-is {
+    font-size: 12px;
+    color: var(--muted);
+    line-height: 1.7;
+    margin-bottom: 14px;
+    padding: 12px;
+    background: rgba(255,255,255,0.03);
+    border-radius: 10px;
+    border-left: 3px solid var(--accent);
+  }
+  .what-is strong { color: var(--text); display: block; margin-bottom: 4px; font-size: 11px; letter-spacing: 0.5px; }
+
+  .features {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 8px;
+    margin-bottom: 14px;
+  }
+  .feature {
+    background: rgba(255,255,255,0.03);
+    border-radius: 10px;
+    padding: 10px;
+    font-size: 11px;
+    color: var(--muted);
+    font-weight: 500;
+  }
+  .feature .f-icon { font-size: 16px; display: block; margin-bottom: 4px; }
+  .feature .f-text { color: var(--text); font-weight: 600; font-size: 11px; }
+
+  .timeline {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 11px;
+    color: var(--muted);
+    margin-bottom: 14px;
+  }
+  .timeline-dot {
+    width: 6px; height: 6px;
+    border-radius: 50%;
+    background: var(--green);
+    flex-shrink: 0;
+  }
+
+  .select-btn {
+    width: 100%;
+    padding: 13px;
+    border-radius: 12px;
+    border: none;
+    background: linear-gradient(135deg, var(--accent), var(--accent2));
+    color: #fff;
+    font-size: 13px;
+    font-weight: 800;
+    cursor: pointer;
+    font-family: 'Manrope', sans-serif;
+    letter-spacing: 0.5px;
+    transition: opacity 0.2s;
+  }
+  .select-btn:active { opacity: 0.85; }
+  .select-btn.selected-btn {
+    background: linear-gradient(135deg, var(--green), #00b377);
+    color: #000;
+  }
+
+  /* ── ФОРМА ЗАКАЗА ── */
+  .order-section {
+    padding: 0 20px;
+    display: none;
+  }
+  .order-section.visible { display: block; }
+
+  .section-title {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 26px;
+    letter-spacing: 1px;
+    margin-bottom: 16px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  .section-title .dot {
+    width: 8px; height: 8px;
+    border-radius: 50%;
+    background: var(--accent);
+  }
+
+  .selected-service-card {
+    background: linear-gradient(135deg, rgba(79,142,255,0.1), rgba(162,89,255,0.1));
+    border: 1px solid rgba(79,142,255,0.3);
+    border-radius: var(--radius);
+    padding: 14px 16px;
+    margin-bottom: 20px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  .ssc-name { font-size: 14px; font-weight: 800; }
+  .ssc-price { font-size: 18px; font-weight: 800; color: var(--green); }
+
+  .form-group { margin-bottom: 14px; }
+  .form-label {
+    font-size: 11px;
+    font-weight: 700;
+    color: var(--muted);
+    letter-spacing: 0.5px;
+    margin-bottom: 6px;
+    display: block;
+    text-transform: uppercase;
+  }
+  .form-input, .form-textarea, .form-select {
+    width: 100%;
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 13px 14px;
+    color: var(--text);
+    font-size: 14px;
+    font-family: 'Manrope', sans-serif;
+    outline: none;
+    transition: border-color 0.2s;
+    -webkit-appearance: none;
+  }
+  .form-input:focus, .form-textarea:focus, .form-select:focus {
+    border-color: var(--accent);
+  }
+  .form-textarea { resize: none; height: 90px; line-height: 1.5; }
+  .form-select { cursor: pointer; }
+
+  .promo-row {
+    display: flex;
+    gap: 8px;
+  }
+  .promo-row .form-input { flex: 1; }
+  .promo-apply {
+    padding: 13px 16px;
+    border-radius: 12px;
+    border: none;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    color: var(--accent);
+    font-size: 13px;
+    font-weight: 700;
+    cursor: pointer;
+    font-family: 'Manrope', sans-serif;
+    white-space: nowrap;
+    transition: all 0.2s;
+  }
+  .promo-apply:active { opacity: 0.7; }
+  .promo-msg {
+    font-size: 11px;
+    margin-top: 6px;
+    font-weight: 600;
+    display: none;
+  }
+  .promo-msg.ok { color: var(--green); display: block; }
+  .promo-msg.err { color: #ff6060; display: block; }
+
+  /* ── ИТОГО ── */
+  .total-box {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 16px;
+    margin-bottom: 20px;
+  }
+  .total-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 12px;
+    color: var(--muted);
+    margin-bottom: 8px;
+  }
+  .total-row.main {
+    font-size: 16px;
+    font-weight: 800;
+    color: var(--text);
+    margin-bottom: 0;
+    padding-top: 10px;
+    border-top: 1px solid var(--border);
+  }
+  .total-row.main .amount { color: var(--green); font-size: 20px; }
+  .discount-row { color: var(--green); font-weight: 700; }
+
+  .submit-btn {
+    width: 100%;
+    padding: 16px;
+    border-radius: var(--radius);
+    border: none;
+    background: linear-gradient(135deg, var(--accent), var(--accent2));
+    color: #fff;
+    font-size: 15px;
+    font-weight: 800;
+    cursor: pointer;
+    font-family: 'Manrope', sans-serif;
+    letter-spacing: 0.5px;
+    margin-bottom: 30px;
+    position: relative;
+    overflow: hidden;
+    transition: opacity 0.2s;
+  }
+  .submit-btn:active { opacity: 0.85; }
+  .submit-btn::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(135deg, rgba(255,255,255,0.1), transparent);
+  }
+
+  /* ── УСПЕХ ── */
+  .success-screen {
+    display: none;
+    padding: 60px 20px 40px;
+    text-align: center;
+  }
+  .success-screen.visible { display: block; }
+  .success-icon {
+    font-size: 64px;
+    margin-bottom: 20px;
+    animation: pop 0.5s cubic-bezier(0.34,1.56,0.64,1);
+  }
+  @keyframes pop {
+    from { transform: scale(0); opacity: 0; }
+    to   { transform: scale(1); opacity: 1; }
+  }
+  .success-title {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 36px;
+    letter-spacing: 1px;
+    margin-bottom: 10px;
+    background: linear-gradient(135deg, var(--green), var(--accent));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+  }
+  .success-sub {
+    color: var(--muted);
+    font-size: 13px;
+    line-height: 1.7;
+    margin-bottom: 30px;
+  }
+  .success-details {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 16px;
+    text-align: left;
+    margin-bottom: 20px;
+  }
+  .sd-row {
+    display: flex;
+    justify-content: space-between;
+    font-size: 12px;
+    margin-bottom: 8px;
+    color: var(--muted);
+  }
+  .sd-row:last-child { margin-bottom: 0; }
+  .sd-row span:last-child { color: var(--text); font-weight: 700; }
+
+  /* ── ПОДДЕРЖКА ── */
+  .support-section {
+    padding: 0 20px;
+    display: none;
+  }
+  .support-section.visible { display: block; }
+  .support-card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 16px;
+    margin-bottom: 12px;
+  }
+  .sc-title {
+    font-size: 13px;
+    font-weight: 800;
+    margin-bottom: 6px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .sc-text {
+    font-size: 12px;
+    color: var(--muted);
+    line-height: 1.6;
+  }
+
+  /* ── НИЖНИЙ ОТСТУП ── */
+  .bottom-pad { height: 20px; }
+
+  /* ── АНИМАЦИЯ ПОЯВЛЕНИЯ ── */
+  .fade-up {
+    animation: fadeUp 0.4s ease both;
+  }
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(20px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+</style>
+</head>
+<body>
+
+<!-- ШАПКА -->
+<div class="header fade-up">
+  <div class="header-top">
+    <div class="logo">🌊 WebWave</div>
+    <div class="badge">MINI APP</div>
+  </div>
+</div>
+
+<!-- HERO -->
+<div class="hero fade-up">
+  <div class="hero-title">ЗАКАЖИ САЙТ<br><span>ВЫГОДНЕЕ</span></div>
+  <div class="hero-sub">Цены в приложении ниже чем при заказе напрямую. Выбери услугу, заполни форму — Roman свяжется в течение часа.</div>
+  <div class="discount-bar">
+    <span class="icon">🎟</span>
+    <span>Есть промокод? <span class="highlight">Применяй при заказе!</span></span>
+  </div>
+</div>
+
+<!-- ТАБЫ -->
+<div class="tabs fade-up" id="tabs">
+  <div class="tab active" data-filter="all">Все услуги</div>
+  <div class="tab" data-filter="landing">Лендинг</div>
+  <div class="tab" data-filter="corp">Корпоратив</div>
+  <div class="tab" data-filter="shop">Магазин</div>
+  <div class="tab" data-filter="bot">Telegram-бот</div>
+  <div class="tab" data-filter="order">📋 Моя заявка</div>
+  <div class="tab" data-filter="support">🛡 Поддержка</div>
+</div>
+
+<!-- УСЛУГИ -->
+<div class="services" id="services">
+
+  <!-- ЛЕНДИНГ -->
+  <div class="service-card visible fade-up" data-type="landing" id="card-landing">
+    <div class="card-header" onclick="toggleCard('landing')">
+      <div class="card-icon icon-blue">🚀</div>
+      <div class="card-info">
+        <div class="card-name">Лендинг / Визитка</div>
+        <div class="card-tagline">Одностраничный продающий сайт</div>
+      </div>
+      <div class="card-price-block">
+        <div class="old-price">$100</div>
+        <div class="new-price">$90</div>
+        <div class="price-label">в приложении</div>
+      </div>
+    </div>
+    <div class="card-body" id="body-landing">
+      <div class="card-body-inner">
+        <div class="what-is">
+          <strong>💡 ЧТО ТАКОЕ ЛЕНДИНГ?</strong>
+          Лендинг — это одностраничный сайт, созданный с одной целью: превратить посетителя в клиента. Идеален для рекламы, акций, продажи одного продукта или услуги. Нет лишних страниц — только конкретика и призыв к действию.
+        </div>
+        <div class="features">
+          <div class="feature"><span class="f-icon">📱</span><span class="f-text">Адаптив</span><br>Под все устройства</div>
+          <div class="feature"><span class="f-icon">⚡️</span><span class="f-text">Быстрый</span><br>Скорость загрузки</div>
+          <div class="feature"><span class="f-icon">🎯</span><span class="f-text">Продающий</span><br>CTA-блоки</div>
+          <div class="feature"><span class="f-icon">🔍</span><span class="f-text">SEO</span><br>Базовая оптимизация</div>
+        </div>
+        <div class="timeline"><div class="timeline-dot"></div> Срок выполнения: 3–7 дней</div>
+        <button class="select-btn" id="btn-landing" onclick="selectService('landing', 'Лендинг / Визитка', 90)">Выбрать — $90</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- КОРПОРАТИВ -->
+  <div class="service-card visible fade-up" data-type="corp" id="card-corp">
+    <div class="card-header" onclick="toggleCard('corp')">
+      <div class="card-icon icon-purple">🏢</div>
+      <div class="card-info">
+        <div class="card-name">Корпоративный сайт</div>
+        <div class="card-tagline">Многостраничный сайт для бизнеса</div>
+      </div>
+      <div class="card-price-block">
+        <div class="old-price">$170</div>
+        <div class="new-price">$150</div>
+        <div class="price-label">в приложении</div>
+      </div>
+    </div>
+    <div class="card-body" id="body-corp">
+      <div class="card-body-inner">
+        <div class="what-is">
+          <strong>💡 ЧТО ТАКОЕ КОРПОРАТИВНЫЙ САЙТ?</strong>
+          Многостраничный сайт для компании или бизнеса. Содержит: главную, о компании, услуги, портфолио, контакты. Создаёт доверие, показывает профессионализм и помогает клиентам найти всю нужную информацию.
+        </div>
+        <div class="features">
+          <div class="feature"><span class="f-icon">📄</span><span class="f-text">5–8 страниц</span><br>Полная структура</div>
+          <div class="feature"><span class="f-icon">🎨</span><span class="f-text">Дизайн</span><br>Под твой бренд</div>
+          <div class="feature"><span class="f-icon">📝</span><span class="f-text">Формы</span><br>Обратная связь</div>
+          <div class="feature"><span class="f-icon">🗺</span><span class="f-text">Карта</span><br>Google Maps</div>
+        </div>
+        <div class="timeline"><div class="timeline-dot"></div> Срок выполнения: 7–14 дней</div>
+        <button class="select-btn" id="btn-corp" onclick="selectService('corp', 'Корпоративный сайт', 150)">Выбрать — $150</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- МАГАЗИН -->
+  <div class="service-card visible fade-up" data-type="shop" id="card-shop">
+    <div class="card-header" onclick="toggleCard('shop')">
+      <div class="card-icon icon-green">🛒</div>
+      <div class="card-info">
+        <div class="card-name">Интернет-магазин</div>
+        <div class="card-tagline">Полноценный магазин с оплатой</div>
+      </div>
+      <div class="card-price-block">
+        <div class="old-price">$250</div>
+        <div class="new-price">$220</div>
+        <div class="price-label">в приложении</div>
+      </div>
+    </div>
+    <div class="card-body" id="body-shop">
+      <div class="card-body-inner">
+        <div class="what-is">
+          <strong>💡 ЧТО ТАКОЕ ИНТЕРНЕТ-МАГАЗИН?</strong>
+          Полноценный сайт для продажи товаров онлайн. Каталог товаров, корзина, оформление заказа, интеграция оплаты. Покупатели могут заказывать и платить без звонков — всё автоматически.
+        </div>
+        <div class="features">
+          <div class="feature"><span class="f-icon">🛍</span><span class="f-text">Каталог</span><br>Товары + фильтры</div>
+          <div class="feature"><span class="f-icon">💳</span><span class="f-text">Оплата</span><br>Онлайн приём</div>
+          <div class="feature"><span class="f-icon">📦</span><span class="f-text">Заказы</span><br>Панель управления</div>
+          <div class="feature"><span class="f-icon">📊</span><span class="f-text">Аналитика</span><br>Статистика продаж</div>
+        </div>
+        <div class="timeline"><div class="timeline-dot"></div> Срок выполнения: 14–21 день</div>
+        <button class="select-btn" id="btn-shop" onclick="selectService('shop', 'Интернет-магазин', 220)">Выбрать — $220</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ТГ БОТ -->
+  <div class="service-card visible fade-up" data-type="bot" id="card-bot">
+    <div class="card-header" onclick="toggleCard('bot')">
+      <div class="card-icon icon-orange">🤖</div>
+      <div class="card-info">
+        <div class="card-name">Telegram-бот</div>
+        <div class="card-tagline">Автоматизация и продажи в TG</div>
+      </div>
+      <div class="card-price-block">
+        <div class="old-price">$80</div>
+        <div class="new-price">$60</div>
+        <div class="price-label">в приложении</div>
+      </div>
+    </div>
+    <div class="card-body" id="body-bot">
+      <div class="card-body-inner">
+        <div class="what-is">
+          <strong>💡 ЧТО ТАКОЕ TELEGRAM-БОТ?</strong>
+          Бот — это автоматический помощник прямо в Telegram. Принимает заявки, отвечает на вопросы, показывает каталог, отправляет уведомления. Работает 24/7 без твоего участия и заменяет целый менеджер.
+        </div>
+        <div class="features">
+          <div class="feature"><span class="f-icon">⏰</span><span class="f-text">24/7</span><br>Без выходных</div>
+          <div class="feature"><span class="f-icon">📨</span><span class="f-text">Заявки</span><br>Автоматически</div>
+          <div class="feature"><span class="f-icon">🔔</span><span class="f-text">Уведомления</span><br>Мгновенно</div>
+          <div class="feature"><span class="f-icon">🌐</span><span class="f-text">2 языка</span><br>RU + UA</div>
+        </div>
+        <div class="timeline"><div class="timeline-dot"></div> Срок выполнения: 2–5 дней</div>
+        <button class="select-btn" id="btn-bot" onclick="selectService('bot', 'Telegram-бот', 60)">Выбрать — $60</button>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<!-- ФОРМА ЗАКАЗА -->
+<div class="order-section" id="order-section">
+  <div class="section-title"><div class="dot"></div>ОФОРМИТЬ ЗАКАЗ</div>
+
+  <div class="selected-service-card" id="selected-display">
+    <div>
+      <div style="font-size:11px;color:var(--muted);margin-bottom:2px;">ВЫБРАНА УСЛУГА</div>
+      <div class="ssc-name" id="ssc-name">—</div>
+    </div>
+    <div class="ssc-price" id="ssc-price">$0</div>
+  </div>
+
+  <div class="form-group">
+    <label class="form-label">Ваше имя</label>
+    <input class="form-input" id="inp-name" placeholder="Как вас зовут?" />
+  </div>
+  <div class="form-group">
+    <label class="form-label">Ниша / цель сайта</label>
+    <textarea class="form-textarea" id="inp-niche" placeholder="Например: кофейня в Днепре, хочу сайт для привлечения клиентов..."></textarea>
+  </div>
+  <div class="form-group">
+    <label class="form-label">Примеры сайтов которые нравятся</label>
+    <input class="form-input" id="inp-refs" placeholder="Ссылки или описание стиля (необязательно)" />
+  </div>
+  <div class="form-group">
+    <label class="form-label">Желаемые сроки</label>
+    <select class="form-select" id="inp-deadline">
+      <option value="Срочно (до 3 дней)">🔥 Срочно (до 3 дней)</option>
+      <option value="1 неделя" selected>✅ 1 неделя</option>
+      <option value="2 недели">📅 2 недели</option>
+      <option value="Не срочно">😌 Не срочно</option>
+    </select>
+  </div>
+  <div class="form-group">
+    <label class="form-label">Промокод (если есть)</label>
+    <div class="promo-row">
+      <input class="form-input" id="inp-promo" placeholder="WEBWAVE10" style="text-transform:uppercase" />
+      <button class="promo-apply" onclick="applyPromo()">Применить</button>
+    </div>
+    <div class="promo-msg" id="promo-msg"></div>
+  </div>
+
+  <!-- ИТОГО -->
+  <div class="total-box" id="total-box">
+    <div class="total-row"><span>Стоимость услуги</span><span id="tot-base">$0</span></div>
+    <div class="total-row discount-row" id="tot-promo-row" style="display:none"><span id="tot-promo-label">Промокод</span><span id="tot-promo-val">-$0</span></div>
+    <div class="total-row main"><span>Итого к оплате</span><span class="amount" id="tot-final">$0</span></div>
+  </div>
+
+  <button class="submit-btn" onclick="submitOrder()">🚀 Отправить заявку</button>
+</div>
+
+<!-- ПОДДЕРЖКА -->
+<div class="support-section" id="support-section">
+  <div class="section-title"><div class="dot"></div>ПОДДЕРЖКА</div>
+  <div class="support-card">
+    <div class="sc-title">🟡 6 месяцев — бесплатно</div>
+    <div class="sc-text">После сдачи проекта 6 месяцев бесплатной поддержки: правки текста и фото, мелкие изменения дизайна, исправление багов.</div>
+  </div>
+  <div class="support-card">
+    <div class="sc-title">🔵 После 6 месяцев</div>
+    <div class="sc-text">Постоянная поддержка по договорённости. Крупные доработки и новые функции обсуждаются отдельно.</div>
+  </div>
+  <div class="support-card">
+    <div class="sc-title">⚡️ Время ответа</div>
+    <div class="sc-text">Отвечаю в течение 1–2 часов в рабочее время. Срочные вопросы — стараюсь решить сразу.</div>
+  </div>
+  <div class="support-card">
+    <div class="sc-title">🎯 Гарантия результата</div>
+    <div class="sc-text">Работаю до результата — не сдам проект пока тебя всё не устроит. Правки в рамках ТЗ включены в стоимость.</div>
+  </div>
+</div>
+
+<!-- УСПЕХ -->
+<div class="success-screen" id="success-screen">
+  <div class="success-icon">🎉</div>
+  <div class="success-title">ЗАЯВКА ОТПРАВЛЕНА!</div>
+  <div class="success-sub">Roman получил твой заказ и свяжется с тобой в течение часа в Telegram.</div>
+  <div class="success-details" id="success-details"></div>
+</div>
+
+<div class="bottom-pad"></div>
+
+<script>
+  // Telegram WebApp init
+  const tg = window.Telegram?.WebApp;
+  if (tg) {
+    tg.ready();
+    tg.expand();
+    tg.setHeaderColor('#0a0a0f');
+    tg.setBackgroundColor('#0a0a0f');
+  }
+
+  const PROMOS = { 'WEBWAVE10': 10, 'WAVE15': 15, 'FIRST20': 20 };
+
+  let selectedService = null;
+  let basePrice = 0;
+  let promoDiscount = 0;
+  let activePromo = '';
+
+  // ── ТАБЫ ──
+  document.querySelectorAll('.tab').forEach(tab => {
+    tab.addEventListener('click', () => {
+      document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+      tab.classList.add('active');
+      const filter = tab.dataset.filter;
+
+      document.getElementById('services').style.display = 'block';
+      document.getElementById('order-section').classList.remove('visible');
+      document.getElementById('support-section').classList.remove('visible');
+      document.getElementById('success-screen').classList.remove('visible');
+
+      if (filter === 'order') {
+        document.getElementById('services').style.display = 'none';
+        document.getElementById('order-section').classList.add('visible');
+        return;
+      }
+      if (filter === 'support') {
+        document.getElementById('services').style.display = 'none';
+        document.getElementById('support-section').classList.add('visible');
+        return;
+      }
+
+      document.querySelectorAll('.service-card').forEach(card => {
+        if (filter === 'all' || card.dataset.type === filter) {
+          card.classList.add('visible');
+        } else {
+          card.classList.remove('visible');
+        }
+      });
+    });
+  });
+
+  // ── РАСКРЫТИЕ КАРТОЧКИ ──
+  function toggleCard(type) {
+    const body = document.getElementById('body-' + type);
+    body.classList.toggle('open');
+  }
+
+  // ── ВЫБОР УСЛУГИ ──
+  function selectService(type, name, price) {
+    selectedService = type;
+    basePrice = price;
+    promoDiscount = 0;
+    activePromo = '';
+    document.getElementById('promo-msg').className = 'promo-msg';
+    document.getElementById('promo-msg').textContent = '';
+    document.getElementById('inp-promo').value = '';
+
+    // Кнопки
+    document.querySelectorAll('.select-btn').forEach(b => b.classList.remove('selected-btn'));
+    const btn = document.getElementById('btn-' + type);
+    btn.classList.add('selected-btn');
+    btn.textContent = '✅ Выбрано';
+
+    // Переключить на форму
+    document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+    document.querySelector('[data-filter="order"]').classList.add('active');
+    document.getElementById('services').style.display = 'none';
+    document.getElementById('order-section').classList.add('visible');
+
+    document.getElementById('ssc-name').textContent = name;
+    document.getElementById('ssc-price').textContent = '$' + price;
+    updateTotal();
+
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+
+  // ── ПРОМОКОД ──
+  function applyPromo() {
+    const code = document.getElementById('inp-promo').value.trim().toUpperCase();
+    const msg  = document.getElementById('promo-msg');
+    if (PROMOS[code]) {
+      promoDiscount = PROMOS[code];
+      activePromo   = code;
+      msg.textContent = '✅ Промокод применён — скидка ' + promoDiscount + '%!';
+      msg.className = 'promo-msg ok';
+      updateTotal();
+    } else {
+      msg.textContent = '❌ Промокод не найден. Проверь написание.';
+      msg.className = 'promo-msg err';
+      promoDiscount = 0;
+      updateTotal();
+    }
+  }
+
+  // ── ОБНОВИТЬ ИТОГО ──
+  function updateTotal() {
+    const disc  = Math.round(basePrice * promoDiscount / 100);
+    const final = basePrice - disc;
+    document.getElementById('tot-base').textContent  = '$' + basePrice;
+    document.getElementById('tot-final').textContent = '$' + final;
+    const promoRow = document.getElementById('tot-promo-row');
+    if (disc > 0) {
+      promoRow.style.display = 'flex';
+      document.getElementById('tot-promo-label').textContent = 'Промокод ' + activePromo;
+      document.getElementById('tot-promo-val').textContent   = '-$' + disc;
+    } else {
+      promoRow.style.display = 'none';
+    }
+  }
+
+  // ── ОТПРАВКА ──
+  function submitOrder() {
+    const name     = document.getElementById('inp-name').value.trim();
+    const niche    = document.getElementById('inp-niche').value.trim();
+    const deadline = document.getElementById('inp-deadline').value;
+    const refs     = document.getElementById('inp-refs').value.trim();
+
+    if (!selectedService) {
+      alert('Выбери услугу!'); return;
+    }
+    if (!name) {
+      alert('Введи своё имя!'); return;
+    }
+    if (!niche) {
+      alert('Опиши нишу / цель сайта!'); return;
+    }
+
+    const disc  = Math.round(basePrice * promoDiscount / 100);
+    const final = basePrice - disc;
+    const svcName = document.getElementById('ssc-name').textContent;
+
+    const orderData = {
+      service:  svcName,
+      name:     name,
+      niche:    niche,
+      refs:     refs || 'не указаны',
+      deadline: deadline,
+      promo:    activePromo || 'нет',
+      price:    '$' + final + (disc > 0 ? ` (скидка $${disc})` : ''),
+    };
+
+    // Отправляем в Telegram
+    if (tg) {
+      tg.sendData(JSON.stringify(orderData));
+    }
+
+    // Показать экран успеха
+    document.getElementById('order-section').classList.remove('visible');
+    document.getElementById('success-screen').classList.add('visible');
+    document.getElementById('success-details').innerHTML = `
+      <div class="sd-row"><span>Услуга</span><span>${svcName}</span></div>
+      <div class="sd-row"><span>Имя</span><span>${name}</span></div>
+      <div class="sd-row"><span>Итого</span><span style="color:var(--green)">$${final}</span></div>
+      <div class="sd-row"><span>Срок</span><span>${deadline}</span></div>
+    `;
+
+    document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+  }
+</script>
+</body>
+</html>
